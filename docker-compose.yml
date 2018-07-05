@@ -5,11 +5,13 @@ services:
     image: mysql:5.7.17
     restart: always
     container_name: product_mysql
+    ports:
+      - "3306:3306"
     volumes:
       - ./data/mysql:/var/lib/mysql
     network_mode: bridge
     environment:
-      - MYSQL_ROOT_PASSWORD=your password
+      - MYSQL_ROOT_PASSWORD=root
     command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
 
   # redis
@@ -18,3 +20,5 @@ services:
     container_name: product_redis
     image: redis:latest
     restart: always
+    ports:
+      - "6379:6379"
