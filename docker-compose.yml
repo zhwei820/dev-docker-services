@@ -6,7 +6,7 @@ services:
     restart: always
     container_name: product_mysql
     ports:
-      - "3306:3306"
+      - "127.0.0.1:3306:3306"
     volumes:
       - ./data/mysql:/var/lib/mysql
     network_mode: bridge
@@ -17,8 +17,60 @@ services:
   # redis
   redis:
     network_mode: bridge
+    container_name: redis
+    image: redis:latest
+    ports:
+      - "127.0.0.1:6379:6379"
+    restart: always
+    command: redis-server 
+
+  # redis
+  redis2:
+    network_mode: bridge
     container_name: product_redis
     image: redis:latest
-    restart: always
     ports:
-      - "6379:6379"
+      - "127.0.0.1:6380:6379"
+    restart: always
+    command: redis-server 
+
+
+  mongo:
+    network_mode: bridge
+    image: mongo:3.2
+    ports:
+      - "127.0.0.1:27017:27017"
+    container_name: mongo
+    volumes:
+      - ./data/mongo:/data/db
+    restart: always
+
+  # mongo:
+  #   network_mode: bridge
+  #   image: mongo:3.2
+  #   ports:
+  #     - "127.0.0.1:27017:27017"
+  #   container_name: mongo
+  #   command: mongod --replSet scanv_rs
+  #   volumes:
+  #     - ./data/mongo:/var/lib/mongo
+  #   restart: always
+
+  elasticsearch:
+    restart: always
+    image: registry.cn-hangzhou.aliyuncs.com/amor/elastic:6.2.3
+    network_mode: bridge
+    image: elasticsearch:5.6
+    environment:
+        - cluster.name=docker-cluster
+        - bootstrap.memory_lock=true
+        - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
+    ulimits:
+        memlock:
+            soft: -1
+            hard: -1
+    # volumes:
+    #     - ./docke_es/esdata_soft:/usr/share/elasticsearch/data
+    ports:
+        - 9200:9200
+        - 9300:9300

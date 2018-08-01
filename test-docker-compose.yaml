@@ -1,0 +1,51 @@
+version: "3"
+services:
+  # mysql
+  mysql:
+    image: mysql:5.7.17
+    restart: always
+    container_name: product_mysql
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+      - ./mysql.conf.d:/etc/mysql/mysql.conf.d
+    network_mode: bridge
+    ports:
+      - "127.0.0.1:3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
+  mysql_slave:
+    image: mysql:5.7.17
+    restart: always
+    container_name: product_mysql_slave
+    volumes:
+      - ./data_slave/mysql:/var/lib/mysql
+      - ./etc/mysql_slave/mysql.conf.d/mysqld.cnf:/etc/mysql/mysql.conf.d/mysqld.cnf
+    network_mode: bridge
+    ports:
+      - "127.0.0.1:3307:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
+  # redis
+  redis:
+    network_mode: bridge
+    container_name: product_redis
+    ports:
+      - "127.0.0.1:6379:6379"
+    image: redis:latest
+    restart: always
+
+
+  mongo:
+    network_mode: bridge
+    image: mongo:3.2
+    ports:
+      - "127.0.0.1:27017:27017"
+    container_name: mongo
+    command: mongod --replSet scanv_rs
+    volumes:
+      - ./data/mongo:/var/lib/mongo
+    restart: always
