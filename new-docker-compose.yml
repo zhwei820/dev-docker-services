@@ -1,0 +1,36 @@
+
+version: "3"
+services:
+ 
+# mysql -u root -prootroot
+# drop database gadmin;
+# CREATE DATABASE IF NOT EXISTS micro_book_mall DEFAULT CHARSET utf8 COLLATE utf8_general_ci;
+
+#  nats   docker run -p 4222:4222 -p 8222:8222 -p 6222:6222 --name gnatsd -ti nats:latest
+
+  # nats:
+  #   image: nats:latest
+  #   network_mode: bridge
+  #   container_name: gnatsd
+  #   ports:
+  #     - "4222:4222"
+  #     - "8222:8222"
+  #     - "6222:6222"
+  #   restart: always
+
+  nats_stream:
+    image: nats-streaming:latest
+    network_mode: bridge
+    container_name: nats-streaming
+    volumes:
+      - ./datastore:/datastore
+
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+    restart: always
+    command: -store file --dir /datastore -m 8222
+
+
+# docker run -ti -v datastore:/datastore -p 4223:4222 -p 8223:8222 nats-streaming -store file --dir /datastore -m 8222
+

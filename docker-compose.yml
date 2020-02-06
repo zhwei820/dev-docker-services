@@ -1,76 +1,154 @@
+
 version: "3"
 services:
   # mysql
   mysql:
-    image: mysql:5.7.17
+    image: mysql:5
     restart: always
     container_name: product_mysql
     ports:
-      - "127.0.0.1:3306:3306"
+      - 0.0.0.0:3306:3306
     volumes:
       - ./data/mysql:/var/lib/mysql
     network_mode: bridge
     environment:
-      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_ROOT_PASSWORD=rootroot
     command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
 
-  # redis
-  redis:
-    network_mode: bridge
-    container_name: redis
-    image: redis:latest
-    ports:
-      - "127.0.0.1:6379:6379"
-    restart: always
-    command: redis-server 
+# mysql -u root -prootroot
+# drop database gadmin;
+# CREATE DATABASE IF NOT EXISTS micro_book_mall DEFAULT CHARSET utf8 COLLATE utf8_general_ci;
 
-  # redis
-  redis2:
-    network_mode: bridge
-    container_name: product_redis
-    image: redis:latest
-    ports:
-      - "127.0.0.1:6380:6379"
-    restart: always
-    command: redis-server 
+#  nats   docker run -p 4222:4222 -p 8222:8222 -p 6222:6222 --name gnatsd -ti nats:latest
 
-
-  mongo:
-    network_mode: bridge
-    image: mongo:3.2
-    ports:
-      - "127.0.0.1:27017:27017"
-    container_name: mongo
-    volumes:
-      - ./data/mongo:/data/db
-    restart: always
-
-  # mongo:
+  # nats:
+  #   image: nats:latest
   #   network_mode: bridge
-  #   image: mongo:3.2
+  #   container_name: gnatsd
   #   ports:
-  #     - "127.0.0.1:27017:27017"
-  #   container_name: mongo
-  #   command: mongod --replSet scanv_rs
-  #   volumes:
-  #     - ./data/mongo:/var/lib/mongo
+  #     - "4222:4222"
+  #     - "8222:8222"
+  #     - "6222:6222"
   #   restart: always
 
-  elasticsearch:
-    restart: always
-    image: registry.cn-hangzhou.aliyuncs.com/amor/elastic:6.2.3
+  nats_stream:
+    image: nats-streaming:latest
     network_mode: bridge
-    image: elasticsearch:5.6
-    environment:
-        - cluster.name=docker-cluster
-        - bootstrap.memory_lock=true
-        - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
-    ulimits:
-        memlock:
-            soft: -1
-            hard: -1
-    # volumes:
-    #     - ./docke_es/esdata_soft:/usr/share/elasticsearch/data
+    container_name: nats-streaming
+    volumes:
+      - ./datastore:/datastore
+
     ports:
-        - 9200:9200
-        - 9300:9300
+      - "4222:4222"
+      - "8222:8222"
+    restart: always
+    command: -store file --dir /datastore -m 8222
+
+
+  nats_stream1:
+    image: nats-streaming:latest
+    network_mode: bridge
+    container_name: nats-streaming1
+    volumes:
+      - ./datastore1:/datastore
+      - ./ns:/ns
+
+    ports:
+      - "6221:6221"
+      - "9221:8222"
+    restart: always
+    command: -c /ns/ns1.conf
+
+  nats_stream2:
+    image: nats-streaming:latest
+    network_mode: bridge
+    container_name: nats-streaming2
+    volumes:
+      - ./datastore2:/datastore
+      - ./ns:/ns
+
+    ports:
+      - "6222:6222"
+      - "9222:8222"
+    restart: always
+    command: -c /ns/ns2.conf
+
+  nats_stream3:
+    image: nats-streaming:latest
+    network_mode: bridge
+    container_name: nats-streaming3
+    volumes:
+      - ./datastore3:/datastore
+      - ./ns:/ns
+
+    ports:
+      - "6223:6223"
+      - "9223:8222"
+    restart: always
+    command: -c /ns/ns3.conf
+
+
+# docker run -ti -v datastore:/datastore -p 4223:4222 -p 8223:8222 nats-streaming -store file --dir /datastore -m 8222
+
+
+#  # redis
+#   # redis:
+#   #   network_mode: bridge
+#   #   container_name: redis
+#   #   image: redis:latest
+#   #   ports:
+#   #     - "6379:6379"
+#   #   restart: always
+#   #   command: redis-server
+
+#  # redis
+  redis2:
+   network_mode: bridge
+   container_name: product_redis
+   image: redis:latest
+   ports:
+     - "6380:6379"
+   restart: always
+   command: redis-server --requirepass root
+
+
+#   mongo:
+#     network_mode: bridge
+#     image: mongo
+#     ports:
+#       - "28017:27017"
+#     container_name: mongo
+#     volumes:
+#       - ./data/mongo:/data/db
+#     restart: always
+
+#   # # mongo:
+#   # #   network_mode: bridge
+#   # #   image: mongo:3.2
+#   # #   ports:
+#   # #     - "27017:27017"
+#   # #   container_name: mongo
+#   # #   command: mongod --replSet scanv_rs
+#   # #   volumes:
+#   # #     - ./data/mongo:/var/lib/mongo
+#   # #   restart: always
+
+#   # elasticsearch:
+#   #   restart: always
+#   #   image: registry.cn-hangzhou.aliyuncs.com/amor/elastic:6.2.3
+#   #   network_mode: bridge
+#   #   image: elasticsearch:5.6
+#   #   environment:
+#   #       - cluster.name=docker-cluster
+#   #       - bootstrap.memory_lock=true
+#   #       - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
+#   #   ulimits:
+#   #       memlock:
+#   #           soft: -1
+#   #           hard: -1
+#   #   # volumes:
+#   #   #     - ./docke_es/esdata_soft:/usr/share/elasticsearch/data
+#   #   ports:
+#   #       - 9200:9200
+#   #       - 9300:9300
+# 					// console.log(e.rtf())
