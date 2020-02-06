@@ -1,19 +1,19 @@
 
 version: "3"
 services:
-  # mysql
-  mysql:
-    image: mysql:5
-    restart: always
-    container_name: product_mysql
-    ports:
-      - 0.0.0.0:3306:3306
-    volumes:
-      - ./data/mysql:/var/lib/mysql
-    network_mode: bridge
-    environment:
-      - MYSQL_ROOT_PASSWORD=rootroot
-    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+  # # mysql
+  # mysql:
+  #   image: mysql:5
+  #   restart: always
+  #   container_name: product_mysql
+  #   ports:
+  #     - 0.0.0.0:3306:3306
+  #   volumes:
+  #     - ./data/mysql:/var/lib/mysql
+  #   network_mode: bridge
+  #   environment:
+  #     - MYSQL_ROOT_PASSWORD=rootroot
+  #   command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
 
 # mysql -u root -prootroot
 # drop database gadmin;
@@ -37,12 +37,14 @@ services:
     container_name: nats-streaming
     volumes:
       - ./datastore:/datastore
+      - ./ns:/ns
 
     ports:
-      - "4222:4222"
+      - "7221:6221"
+      - "4222:4221"
       - "8222:8222"
     restart: always
-    command: -store file --dir /datastore -m 8222
+    command: -c /ns/ns.conf
 
 
   nats_stream1:
@@ -102,14 +104,14 @@ services:
 #   #   command: redis-server
 
 #  # redis
-  redis2:
-   network_mode: bridge
-   container_name: product_redis
-   image: redis:latest
-   ports:
-     - "6380:6379"
-   restart: always
-   command: redis-server --requirepass root
+  # redis2:
+  #  network_mode: bridge
+  #  container_name: product_redis
+  #  image: redis:latest
+  #  ports:
+  #    - "6380:6379"
+  #  restart: always
+  #  command: redis-server --requirepass root
 
 
 #   mongo:
