@@ -31,24 +31,24 @@ services:
   #     - "6222:6222"
   #   restart: always
 
-  nats_stream:
-    image: nats-streaming:latest
-    network_mode: bridge
-    container_name: nats-streaming
-    volumes:
-      - ./datastore:/datastore
-      - ./ns:/ns
+  # nats_stream:
+  #   image: zw/nats-stream:latest
+  #   network_mode: bridge
+  #   container_name: nats-streaming
+  #   volumes:
+  #     - ./datastore:/datastore
+  #     - ./ns:/ns
 
-    ports:
-      - "7221:6221"
-      - "4222:4221"
-      - "8222:8222"
-    restart: always
-    command: -c /ns/ns.conf
+  #   ports:
+  #     - "7221:6221"
+  #     - "4222:4221"
+  #     - "8222:8222"
+  #   restart: always
+  #   command: -c /ns/ns.conf
 
 
   nats_stream1:
-    image: nats-streaming:latest
+    image: zw/nats-stream:latest
     network_mode: bridge
     container_name: nats-streaming1
     volumes:
@@ -56,13 +56,14 @@ services:
       - ./ns:/ns
 
     ports:
+      - "4221:4221"
       - "6221:6221"
       - "9221:8222"
     restart: always
     command: -c /ns/ns1.conf
 
   nats_stream2:
-    image: nats-streaming:latest
+    image: zw/nats-stream:latest
     network_mode: bridge
     container_name: nats-streaming2
     volumes:
@@ -70,13 +71,14 @@ services:
       - ./ns:/ns
 
     ports:
+      - "4222:4222"
       - "6222:6222"
       - "9222:8222"
     restart: always
     command: -c /ns/ns2.conf
 
   nats_stream3:
-    image: nats-streaming:latest
+    image: zw/nats-stream:latest
     network_mode: bridge
     container_name: nats-streaming3
     volumes:
@@ -84,10 +86,12 @@ services:
       - ./ns:/ns
 
     ports:
+      - "4223:4223"
       - "6223:6223"
       - "9223:8222"
     restart: always
     command: -c /ns/ns3.conf
+
 
 
 # docker run -ti -v datastore:/datastore -p 4223:4222 -p 8223:8222 nats-streaming -store file --dir /datastore -m 8222
