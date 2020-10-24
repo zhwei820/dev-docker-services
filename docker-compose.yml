@@ -1,23 +1,23 @@
 
 version: "3"
 services:
-  # # mysql
-  # mysql:
-  #   image: mysql:5
-  #   restart: always
-  #   container_name: product_mysql
-  #   ports:
-  #     - 0.0.0.0:3306:3306
-  #   volumes:
-  #     - ./data/mysql:/var/lib/mysql
-  #   network_mode: bridge
-  #   environment:
-  #     - MYSQL_ROOT_PASSWORD=rootroot
-  #   command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+  # mysql
+  mysql:
+    image: mysql:5.7
+    restart: always
+    container_name: product_mysql
+    ports:
+      - 0.0.0.0:3306:3306
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+    network_mode: bridge
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootroot
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
 
-# mysql -u root -prootroot
-# drop database gadmin;
-# CREATE DATABASE IF NOT EXISTS micro_book_mall DEFAULT CHARSET utf8 COLLATE utf8_general_ci;
+# mysql -h 127.0.0.1 -u root -prootroot
+# drop database coconut_archive;
+# CREATE DATABASE IF NOT EXISTS gozero DEFAULT CHARSET utf8mb4 COLLATE utf8mb4_general_ci;
 
 #  nats   docker run -p 4222:4222 -p 8222:8222 -p 6222:6222 --name gnatsd -ti nats:latest
 
@@ -47,75 +47,74 @@ services:
   #   command: -c /ns/ns.conf
 
 
-  nats_stream1:
-    image: zw/nats-stream:latest
-    network_mode: bridge
-    container_name: nats-streaming1
-    volumes:
-      - ./datastore1:/datastore
-      - ./ns:/ns
+  # nats_stream1:
+  #   image: zw/nats-stream:latest
+  #   network_mode: bridge
+  #   container_name: nats-streaming1
+  #   volumes:
+  #     - ./datastore1:/datastore
+  #     - ./ns:/ns
 
-    ports:
-      - "4221:4221"
-      - "6221:6221"
-      - "9221:8222"
-    restart: always
-    command: -c /ns/ns1.conf
+  #   ports:
+  #     - "4221:4221"
+  #     - "6221:6221"
+  #     - "9221:8222"
+  #   restart: always
+  #   command: -c /ns/ns1.conf
 
-  nats_stream2:
-    image: zw/nats-stream:latest
-    network_mode: bridge
-    container_name: nats-streaming2
-    volumes:
-      - ./datastore2:/datastore
-      - ./ns:/ns
+  # nats_stream2:
+  #   image: zw/nats-stream:latest
+  #   network_mode: bridge
+  #   container_name: nats-streaming2
+  #   volumes:
+  #     - ./datastore2:/datastore
+  #     - ./ns:/ns
 
-    ports:
-      - "4222:4222"
-      - "6222:6222"
-      - "9222:8222"
-    restart: always
-    command: -c /ns/ns2.conf
+  #   ports:
+  #     - "4222:4222"
+  #     - "6222:6222"
+  #     - "9222:8222"
+  #   restart: always
+  #   command: -c /ns/ns2.conf
 
-  nats_stream3:
-    image: zw/nats-stream:latest
-    network_mode: bridge
-    container_name: nats-streaming3
-    volumes:
-      - ./datastore3:/datastore
-      - ./ns:/ns
+  # nats_stream3:
+  #   image: zw/nats-stream:latest
+  #   network_mode: bridge
+  #   container_name: nats-streaming3
+  #   volumes:
+  #     - ./datastore3:/datastore
+  #     - ./ns:/ns
 
-    ports:
-      - "4223:4223"
-      - "6223:6223"
-      - "9223:8222"
-    restart: always
-    command: -c /ns/ns3.conf
+  #   ports:
+  #     - "4223:4223"
+  #     - "6223:6223"
+  #     - "9223:8222"
+  #   restart: always
+  #   command: -c /ns/ns3.conf
 
 
 
 # docker run -ti -v datastore:/datastore -p 4223:4222 -p 8223:8222 nats-streaming -store file --dir /datastore -m 8222
 
 
-#  # redis
-#   # redis:
-#   #   network_mode: bridge
-#   #   container_name: redis
-#   #   image: redis:latest
-#   #   ports:
-#   #     - "6379:6379"
-#   #   restart: always
-#   #   command: redis-server
+  redis:
+    network_mode: bridge
+    container_name: redis
+    image: redis:latest
+    ports:
+      - "6381:6379"
+    restart: always
+    command: redis-server
 
-#  # redis
-  # redis2:
-  #  network_mode: bridge
-  #  container_name: product_redis
-  #  image: redis:latest
-  #  ports:
-  #    - "6380:6379"
-  #  restart: always
-  #  command: redis-server --requirepass root
+ # redis
+  redis2:
+   network_mode: bridge
+   container_name: product_redis
+   image: redis:latest
+   ports:
+     - "6379:6379"
+   restart: always
+   command: redis-server --requirepass rootroot
 
 
 #   mongo:
@@ -158,3 +157,53 @@ services:
 #   #       - 9200:9200
 #   #       - 9300:9300
 # 					// console.log(e.rtf())
+
+
+# networks:
+#   byfn:
+
+# services:
+#   etcd1:
+#     image: quay.io/coreos/etcd
+#     container_name: etcd1
+#     command: etcd -name etcd1 -advertise-client-urls http://0.0.0.0:2379 -listen-client-urls http://0.0.0.0:2379 -listen-peer-urls http://0.0.0.0:2380 -initial-cluster-token etcd-cluster -initial-cluster "etcd1=http://etcd1:2380,etcd2=http://etcd2:2380,etcd3=http://etcd3:2380" -initial-cluster-state new
+#     ports:
+#       - 2379
+#       - 2380
+#     networks:
+#       - byfn
+
+#   etcd2:
+#     image: quay.io/coreos/etcd
+#     container_name: etcd2
+#     command: etcd -name etcd2 -advertise-client-urls http://0.0.0.0:2379 -listen-client-urls http://0.0.0.0:2379 -listen-peer-urls http://0.0.0.0:2380 -initial-cluster-token etcd-cluster -initial-cluster "etcd1=http://etcd1:2380,etcd2=http://etcd2:2380,etcd3=http://etcd3:2380" -initial-cluster-state new
+#     ports:
+#       - 2379
+#       - 2380
+#     networks:
+#       - byfn
+
+#   etcd3:
+#     image: quay.io/coreos/etcd
+#     container_name: etcd3
+#     command: etcd -name etcd3 -advertise-client-urls http://0.0.0.0:2379 -listen-client-urls http://0.0.0.0:2379 -listen-peer-urls http://0.0.0.0:2380 -initial-cluster-token etcd-cluster -initial-cluster "etcd1=http://etcd1:2380,etcd2=http://etcd2:2380,etcd3=http://etcd3:2380" -initial-cluster-state new
+#     ports:
+#       - 2379
+#       - 2380
+#     networks:
+#       - byfn
+
+
+  nacos:
+    image: nacos/nacos-server
+    # build: .
+    volumes:
+      - ./data/:/home/nacos/data
+    network_mode: host
+    environment:
+      - MODE=standalone
+    container_name: nacos
+    ports:
+      - "8848:8848"
+    restart: always
+
