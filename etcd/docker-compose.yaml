@@ -1,0 +1,41 @@
+version: "3.5"
+services:
+  etcd:
+    hostname: etcd1
+    image: bitnami/etcd:3
+    ports:
+      - "2379:2379"
+      - "2380:2380"
+      - "4001:4001"
+      - "7001:7001"
+    user: root
+    volumes:
+      - "./data:/opt/bitnami/etcd/data"
+    environment:
+      - "ETCD_ADVERTISE_CLIENT_URLS=http://etcd:2379"
+      - "ETCD_LISTEN_CLIENT_URLS=http://0.0.0.0:2379"
+      - "ETCD_LISTEN_PEER_URLS=http://0.0.0.0:2380"
+      - "ETCD_INITIAL_ADVERTISE_PEER_URLS=http://0.0.0.0:2380"
+      - "ALLOW_NONE_AUTHENTICATION=yes"
+      - "ETCD_INITIAL_CLUSTER=node1=http://0.0.0.0:2380"
+      - "ETCD_NAME=node1"
+      - "ETCD_DATA_DIR=/opt/bitnami/etcd/data"
+    networks:
+      - app-net
+
+  e3w:
+    hostname: e3w
+    image: soyking/e3w:latest
+    ports:
+      - "8000:8080"
+    # volumes:
+    #   - "/config.ini:/app/conf/config.default.ini"
+    networks:
+      - e3wnet
+      - app-net
+
+networks:
+  e3wnet:
+    name: e3wnet
+  app-net:
+    name: app-net

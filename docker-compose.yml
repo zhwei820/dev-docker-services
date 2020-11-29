@@ -10,14 +10,35 @@ services:
       - 0.0.0.0:3306:3306
     volumes:
       - ./data/mysql:/var/lib/mysql
+      - ./:/opt
     network_mode: bridge
     environment:
       - MYSQL_ROOT_PASSWORD=rootroot
-    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    command: bash /opt/start_mysql.sh
+
+  redis:
+    network_mode: bridge
+    container_name: redis
+    image: redis:latest
+    ports:
+      - "6381:6379"
+    restart: always
+    command: redis-server
+
+#  # redis
+#   redis2:
+#    network_mode: bridge
+#    container_name: product_redis
+#    image: redis:latest
+#    ports:
+#      - "6379:6379"
+#    restart: always
+#    command: redis-server --requirepass rootroot
+
 
 # mysql -h 127.0.0.1 -u root -prootroot
 # drop database coconut_archive;
-# CREATE DATABASE IF NOT EXISTS gozero DEFAULT CHARSET utf8mb4 COLLATE utf8mb4_general_ci;
+# CREATE DATABASE IF NOT EXISTS dbadmin DEFAULT CHARSET utf8mb4 COLLATE utf8mb4_general_ci;
 
 #  nats   docker run -p 4222:4222 -p 8222:8222 -p 6222:6222 --name gnatsd -ti nats:latest
 
@@ -97,26 +118,6 @@ services:
 # docker run -ti -v datastore:/datastore -p 4223:4222 -p 8223:8222 nats-streaming -store file --dir /datastore -m 8222
 
 
-  redis:
-    network_mode: bridge
-    container_name: redis
-    image: redis:latest
-    ports:
-      - "6381:6379"
-    restart: always
-    command: redis-server
-
- # redis
-  redis2:
-   network_mode: bridge
-   container_name: product_redis
-   image: redis:latest
-   ports:
-     - "6379:6379"
-   restart: always
-   command: redis-server --requirepass rootroot
-
-
 #   mongo:
 #     network_mode: bridge
 #     image: mongo
@@ -194,16 +195,48 @@ services:
 #       - byfn
 
 
-  nacos:
-    image: nacos/nacos-server
+  # nacos:
+  #   image: nacos/nacos-server
+  #   # build: .
+  #   volumes:
+  #     - ./data/:/home/nacos/data
+  #   network_mode: host
+  #   environment:
+  #     - MODE=standalone
+  #   container_name: nacos
+  #   ports:
+  #     - "8848:8848"
+  #   restart: always
+
+  clickhouse-server:
+    image: yandex/clickhouse-server
     # build: .
     volumes:
       - ./data/:/home/nacos/data
-    network_mode: host
-    environment:
-      - MODE=standalone
-    container_name: nacos
-    ports:
-      - "8848:8848"
+    network_mode: bridge
     restart: always
+    ports:
+      - 8123:8123
+      - 9000:9000
 
+  bifrost:
+    image: jc3wish/bifrost
+    # build: .
+    volumes:
+      - ./data/:/linux/data
+    network_mode: bridge
+    restart: always
+    ports:
+      - 21036:21036
+    
+    # root:rootroot@tcp(192.168.0.105:3306)/dbadmin
+
+# 默认用户名和密码
+
+# 用户名： Bifrost
+
+# 密码： Bifrost123
+
+version: '2'
+networks:
+  byfn:
