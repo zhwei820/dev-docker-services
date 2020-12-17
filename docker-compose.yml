@@ -3,7 +3,8 @@ version: "3"
 services:
   # mysql
   mysql:
-    image: mysql:5.7
+    build: .
+    # image: mysql:5.7
     restart: always
     container_name: product_mysql
     ports:
@@ -14,7 +15,8 @@ services:
     network_mode: bridge
     environment:
       - MYSQL_ROOT_PASSWORD=rootroot
-    command: bash /opt/start_mysql.sh
+    # command: bash /opt/start_mysql.sh
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
 
   redis:
     network_mode: bridge
@@ -212,23 +214,39 @@ services:
     image: yandex/clickhouse-server
     # build: .
     volumes:
-      - ./data/:/home/nacos/data
+      - ./users.xml:/etc/clickhouse-server/users.xml
+      - ./data/ck:/var/lib/clickhouse/
+      - ./data/cklog:/var/log/clickhouse-server/
     network_mode: bridge
     restart: always
     ports:
       - 8123:8123
       - 9000:9000
+# http://192.168.0.105:8123/default
+# tcp://192.168.0.105:9000/default
+
+
+  tabix:
+    image: spoonest/clickhouse-tabix-web-client
+    network_mode: bridge
+    restart: always
+    ports:
+      - 8080:80
+    depends_on:
+      - mysql
 
   bifrost:
-    image: jc3wish/bifrost
+    image: jc3wish/bifrost:latest
     # build: .
     volumes:
       - ./data/:/linux/data
+      - ./logs/:/linux/logs
     network_mode: bridge
     restart: always
     ports:
       - 21036:21036
-    
+    depends_on:
+      - mysql
     # root:rootroot@tcp(192.168.0.105:3306)/dbadmin
 
 # 默认用户名和密码
